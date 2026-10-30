@@ -109,23 +109,24 @@ let ROSTER=[
  P("AC2","Assistant Commissioner","Investigations & Counter Terrorism",".tigerjj70","",""),
  P("AC3","Assistant Commissioner","People & Capability Command","reedefender1234","Reedefender1235",""),
  P("SC1","Superintendent","General Duties"),
- P("TRF1","Superintendent","Traffic & Highway Patrol","ialsocrank90s","slogo09876"),
+ P("SC2","Superintendent","Traffic & Highway Patrol","ialsocrank90s","slogo09876"),
  P("SC3","Superintendent","State Crime Command"),
  P("SC4","Inspector","General Duties"),
- P("TRF2","Inspector","Traffic & Highway Patrol"),
- P("PORS1","Inspector","Public Order Riot Squad"),
+ P("SC5","Inspector","Traffic & Highway Patrol"),
+ P("SC6","Inspector","Public Order Riot Squad"),
  P("SC7","Inspector","State Crime Command"),
- P("TAC1","Inspector","Tactical Operations Unit","scp_lover123","GKMINECRAFTPRO"),
+ P("SC8","Inspector","Tactical Operations Unit","scp_lover123","GKMINECRAFTPRO"),
  P("SC9","Inspector","Professional Standards Command"),
  P("SC10","Inspector","Education & Training Command"),
- P("WP40","Inspector","Marine Area Command")
+ P("SC11","Inspector","Marine Area Command")
 ];
 const GEN=[["Senior Sergeant",9],["Sergeant",8],["Leading Senior Constable",5],["Senior Constable",10],["Constable",15],["Probationary Constable",10]];
 const SS_PRIM=["General Duties","Traffic & Highway Patrol","Public Order Riot Squad","State Crime Command","Tactical Operations Unit","Professional Standards Command","Education & Training Command","Marine Area Command","General Duties"];
-const CS_RENAME={SC2:"TRF1",SC5:"TRF2",SC13:"TRF3",SC8:"TAC1",SC16:"TAC2",SC6:"PORS1",SC14:"PORS2",SC11:"WP40",SC19:"WP41"};
+const DCS={SC2:"TRF1",SC5:"TRF2",SC13:"TRF3",SC8:"TAC1",SC16:"TAC2",SC6:"PORS1",SC14:"PORS2",SC11:"WP40",SC19:"WP41"};
 const RENAME={};let nextSC=12;
-GEN.forEach(([r,n])=>{for(let i=1;i<=n;i++){const m=P(CS_RENAME["SC"+nextSC]||"SC"+nextSC,r,r==="Senior Sergeant"?SS_PRIM[i-1]:"General Duties");if(r==="Senior Sergeant"&&i===9)m.secondary=["Dog Squad","None"];ROSTER.push(m);nextSC++}});
-const DATA_V=5;
+GEN.forEach(([r,n])=>{for(let i=1;i<=n;i++){const m=P("SC"+nextSC,r,r==="Senior Sergeant"?SS_PRIM[i-1]:"General Duties");if(r==="Senior Sergeant"&&i===9)m.secondary=["Dog Squad","None"];ROSTER.push(m);nextSC++}});
+ROSTER.forEach(m=>{if(DCS[m.callsign])m.dcs=DCS[m.callsign]});
+const DATA_V=6;
 let edit=false,dbDoc=null,activeDiv="All";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -163,7 +164,7 @@ function row(m){
   if(!edit){
     const sec=m.secondary.filter(d=>d&&d!=="None");
     const last=sec.length?sec.map(pill).join(" "):'<span class="none">None</span>';
-    return`<div class="m${isCmd(m)?" nc":""}"><div class="cs">${esc(m.callsign)}</div>
+    return`<div class="m${isCmd(m)?" nc":""}"><div class="cs">${esc(page&&m.dcs?m.dcs:m.callsign)}</div>
       <div><span class="lbl">Discord username</span>${user(m.discord,"Discord")}</div>
       <div><span class="lbl">Roblox username</span>${user(m.roblox,"Roblox")}</div>
       <div><span class="lbl">Primary division</span>${pill(m.primary)}</div>
@@ -171,7 +172,7 @@ function row(m){
   }
   const c=esc(m.callsign),inp=(f,v,ph)=>`<input class="f" data-f="${f}" data-c="${c}" value="${esc(v)}" placeholder="${ph}" aria-label="${f} for ${c}">`;
   const sel=(k,v)=>`<select class="f" data-f="sec" data-k="${k}" data-c="${c}" aria-label="Secondary division ${k+1} for ${c}" style="${v==="None"?"":dstyle(v)}">${opts(FILTER_DIVS,v,true)}</select>`;
-  return`<div class="m e${isCmd(m)?" nc":""}"><div class="cs">${c}</div><div>${inp("discord",m.discord,"Discord username")}</div><div>${inp("roblox",m.roblox,"Roblox username")}</div>
+  return`<div class="m e${isCmd(m)?" nc":""}"><div class="cs">${esc(page&&m.dcs?m.dcs:m.callsign)}</div><div>${inp("discord",m.discord,"Discord username")}</div><div>${inp("roblox",m.roblox,"Roblox username")}</div>
     <div><select class="f" data-f="primary" data-c="${c}" aria-label="Primary division for ${c}" style="${dstyle(m.primary)}">${opts(divsFor(m.rank),m.primary)}</select></div>
     ${isCmd(m)?"":`<div>${sel(0,m.secondary[0])+sel(1,m.secondary[1])}</div>`}
     <div><button type="button" class="rm" data-c="${c}">Remove</button></div></div>`;
@@ -180,7 +181,7 @@ function render(){
   const q=$("q").value.trim().toLowerCase(),rk=$("rank").value,hide=$("hide").checked,out=[];
   RANKS.forEach(rank=>{
     if(rk!=="All"&&rk!==rank)return;
-    const ms=ROSTER.filter(m=>m.rank===rank&&(activeDiv==="All"||m.primary===activeDiv||m.secondary.includes(activeDiv))&&(!hide||m.discord||m.roblox)&&(!q||[m.callsign,m.discord,m.roblox].some(v=>v.toLowerCase().includes(q))));
+    const ms=ROSTER.filter(m=>m.rank===rank&&(activeDiv==="All"||m.primary===activeDiv||m.secondary.includes(activeDiv))&&(!hide||m.discord||m.roblox)&&(!q||[m.callsign,m.dcs||"",m.discord,m.roblox].some(v=>v.toLowerCase().includes(q))));
     if(!ms.length){if(!q&&activeDiv==="All"&&!hide)out.push(`<section class="group"><h2>${esc(rank)}</h2><div class="table"><div class="empty" style="padding:18px">No members added yet.</div></div></section>`);return}
     out.push(`<section class="group"><h2>${esc(rank)}</h2><div class="table">
     <div class="head${edit?" e":""}${COMMAND.includes(rank)?" nc":""}"><span>Callsign</span><span>Discord username</span><span>Roblox username</span><span>Primary division</span>${COMMAND.includes(rank)?"":"<span>Secondary divisions</span>"}${edit?"<span></span>":""}</div>
