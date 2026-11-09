@@ -95,9 +95,9 @@ const EDITOR=false;
 const RANKS=["Commissioner","Deputy Commissioner","Assistant Commissioner","Superintendent","Inspector","Senior Sergeant","Sergeant","Leading Senior Constable","Senior Constable","Constable","Probationary Constable"];
 const CMD_DIVS=["Department Wide","Metropolitan Field Operations","Investigations & Counter Terrorism","People & Capability Command"];
 const divsFor=r=>COMMAND.includes(r)?CMD_DIVS:FILTER_DIVS;
-const DIVPAGES=["Traffic & Highway Patrol","Tactical Operations Unit","State Crime Command","Marine Area Command","Public Order Riot Squad","Professional Standards Command","Education & Training Command"];
+const DIVPAGES=["Traffic & Highway Patrol","Tactical Operations Unit","State Crime Command","Marine Area Command","Public Order Riot Squad","Professional Standards Command","Education & Training Command","Dog Squad"];
 const COMMAND=["Commissioner","Deputy Commissioner","Assistant Commissioner"];
-const FILTER_DIVS=["General Duties",...DIVPAGES,"Dog Squad"];
+const FILTER_DIVS=["General Duties",...DIVPAGES];
 const COLORS={"Department Wide":["#e6c9f0","#6a1b8a"],"Metropolitan Field Operations":["#0f7a46","#fff"],"Investigations & Counter Terrorism":["#c4161c","#fff"],"People & Capability Command":["#1c55b8","#fff"],"General Duties":["#b7dcf3","#0f4c7a"],"Traffic & Highway Patrol":["#fde29b","#6b4a00"],"State Crime Command":["#fbc4c0","#b3141b"],"Public Order Riot Squad":["#0f4aa8","#fff"],"Tactical Operations Unit":["#3b3b3b","#fff"],"Professional Standards Command":["#e6c9f0","#6a1b8a"],"Marine Area Command":["#7a3b12","#ffd9b3"],"Dog Squad":["#cfe8f7","#1a5a8a"],"Education & Training Command":["#c6e8bd","#1d5a14"]};
 const ALLDIVS=Object.keys(COLORS);
 const P=(callsign,rank,primary,discord="",roblox="",role="",secondary=["None","None"])=>({callsign,rank,primary,discord,roblox,role,secondary});
@@ -113,7 +113,7 @@ let ROSTER=[
  P("SC3","Superintendent","State Crime Command"),
  P("SC4","Inspector","General Duties"),
  P("SC5","Inspector","Traffic & Highway Patrol"),
- P("SC6","Inspector","Public Order Riot Squad"),
+ P("SC6","Inspector","Public Order Riot Squad","zandarhip","Zandarhip"),
  P("SC7","Inspector","State Crime Command"),
  P("SC8","Inspector","Tactical Operations Unit","scp_lover123","GKMINECRAFTPRO"),
  P("SC9","Inspector","Professional Standards Command"),
@@ -121,12 +121,12 @@ let ROSTER=[
  P("SC11","Inspector","Marine Area Command")
 ];
 const GEN=[["Senior Sergeant",9],["Sergeant",8],["Leading Senior Constable",5],["Senior Constable",10],["Constable",15],["Probationary Constable",10]];
-const SS_PRIM=["General Duties","Traffic & Highway Patrol","Public Order Riot Squad","State Crime Command","Tactical Operations Unit","Professional Standards Command","Education & Training Command","Marine Area Command","General Duties"];
-const DCS={SC2:"TRF1",SC5:"TRF2",SC13:"TRF3",SC8:"TAC1",SC16:"TAC2",SC6:"PORS1",SC14:"PORS2",SC11:"WP40",SC19:"WP41"};
+const SS_PRIM=["General Duties","Traffic & Highway Patrol","Public Order Riot Squad","State Crime Command","Tactical Operations Unit","Professional Standards Command","Education & Training Command","Marine Area Command","Dog Squad"];
+const DCS={SC2:"TRF1",SC5:"TRF2",SC13:"TRF3",SC8:"TAC1",SC16:"TAC2",SC6:"PORS1",SC14:"PORS2",SC11:"WP40",SC19:"WP41",SC20:"DOG1"};
 const RENAME={};let nextSC=12;
-GEN.forEach(([r,n])=>{for(let i=1;i<=n;i++){const m=P("SC"+nextSC,r,r==="Senior Sergeant"?SS_PRIM[i-1]:"General Duties");if(r==="Senior Sergeant"&&i===9)m.secondary=["Dog Squad","None"];ROSTER.push(m);nextSC++}});
+GEN.forEach(([r,n])=>{for(let i=1;i<=n;i++){const m=P("SC"+nextSC,r,r==="Senior Sergeant"?SS_PRIM[i-1]:"General Duties");if(r==="Senior Sergeant"&&i===9){m.discord="koda0337";m.roblox="ItxKoda12"}ROSTER.push(m);nextSC++}});
 ROSTER.forEach(m=>{if(DCS[m.callsign])m.dcs=DCS[m.callsign]});
-const DATA_V=6;
+const DATA_V=7;
 let edit=false,dbDoc=null,activeDiv="All";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
